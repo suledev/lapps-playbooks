@@ -1,0 +1,6 @@
+---
+SMG: smg-1.1.0-SNAPSHOT
+MANAGER: http://downloads.lappsgrid.org/service-manager
+SCRIPTS: http://downloads.lappsgrid.org/scripts
+TOMCAT_MANAGER: /usr/share/tomcat/service-manager
+TOMCAT_BPEL: /usr/share/tomcat/active-bpel

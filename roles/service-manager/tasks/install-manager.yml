@@ -1,0 +1,53 @@
+--
+  - name: Update apt-get indicies
+    shell: apt-get update && apt-get upgrade -y
+
+  - name: Install common packages
+    shell: curl -sSL {{ SCRIPTS }}/install-common.sh | bash
+
+  - name: Configure Service Manager
+    shell: wget {{ MANAGER }}/service-manager.properties
+
+  - name: Get Config File
+    shell: wget {{ MANAGER }}/ServiceManager.config
+
+  - name: Get the program used to transform the ServiceManager.config file into the various xml files.
+    unarchive:
+      src: http://downloads.lappsgrid.org/{{ SMG }}.tgz
+      dest: playbook_dir
+
+  - name: Fixing permissions
+    shell: chmod +x {{ SMG }}/smg
+
+  - name: Generating XML files....
+    shell: {{ SMG }}/smg ServiceManager.config
+
+  - name: Source db.config
+    shell: source db.config
+
+  - name: Create postgres User
+    shell: sudo -u postgres createuser -S -D -R $ROLENAME
+
+  - name: Set psql user password
+    shell: sudo -u postgres psql --command "ALTER USER $ROLENAME WITH PASSWORD '$PASSWORD'"
+
+  - name: Create Database
+    shell: sudo -u postgres createdb $DATABASE -O $ROLENAME -E 'UTF8'
+
+  - name: Start Tomcat installation...
+    shell: curl -sSL {{ MANAGER }}/install-tomcat.sh | bash
+
+  - name: Moving XML Files....
+    shell: cp tomcat-users.xml {{ TOMCAT_MANAGER }}/conf
+
+  - name: Moving XML Files....
+    shell: cp service_manager.xml {{ TOMCAT_MANAGER }}/conf/Catalina/localhost
+
+  - name: Moving XML Files....
+    shell: cp tomcat-users-bpel.xml {{ TOMCAT_BPEL }}/conf/tomcat-users.xml
+
+  - name: Moving XML Files....
+    shell: cp active-bpel.xml {{ TOMCAT_BPEL }}/conf/Catalina/localhost
+
+  - name: Moving XML Files....
+    shell: cp langrid.ae.properties {{ TOMCAT_BPEL }}/bpr

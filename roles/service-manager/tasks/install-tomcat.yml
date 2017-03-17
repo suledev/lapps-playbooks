@@ -1,0 +1,22 @@
+--
+  - name: Add Tomcat User Group
+    shell: groupadd tomcat
+
+  - name: Add Tomcat User
+    shell: adduser --system --home /usr/share/tomcat --shell /usr/bin/bash --ingroup tomcat tomcat
+
+  - name: Download Tomcat
+    unarchive:
+      src: http://downloads.lappsgrid.org/tomcat.tgz
+      dest: /usr/share
+
+  - name: Set Tomcat permissions
+    shell: chown -R tomcat:tomcat /usr/share/tomcat
+
+  - name: Get Tomcat script
+    get_url:
+      url: {{ manager }}/tomcat.sh
+      dest: /etc/init.d/tomcat
+
+  - name: Set script permissions
+  
