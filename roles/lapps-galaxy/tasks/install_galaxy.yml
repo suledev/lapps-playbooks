@@ -1,0 +1,5 @@
+--
+  - name: Clone Galaxy Repo
+    git:
+      repo: https://github.com/lappsgrid-incubator/Galaxy
+      dest: playbook_dir
