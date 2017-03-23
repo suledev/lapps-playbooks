@@ -29,10 +29,10 @@
     shell: sudo -u postgres createuser -S -D -R $ROLENAME
 
   - name: Set psql user password
-    shell: sudo -u postgres psql --command "ALTER USER $ROLENAME WITH PASSWORD '$PASSWORD'"
+    shell: sudo -u postgres psql --command "ALTER USER  $ROLENAME  WITH PASSWORD '$PASSWORD'"
 
   - name: Create Database
-    shell: sudo -u postgres createdb $DATABASE -O $ROLENAME -E 'UTF8'
+    shell: sudo -u postgres createdb $DATABASE -O $ROLENAME  -E 'UTF8'
 
   - name: Start Tomcat installation...
     shell: curl -sSL {{ MANAGER }}/install-tomcat.sh | bash
@@ -51,3 +51,37 @@
 
   - name: Moving XML Files....
     shell: cp langrid.ae.properties {{ TOMCAT_BPEL }}/bpr
+
+  - name: Downloading Service Manager WAR file
+    shell: wget https://github.com/openlangrid/langrid/releases/download/servicegrid-core-20161206/jp.go.nict.langrid.webapps.servicegrid-core.jxta-p2p.nict-nlp-20161206.war
+
+  - name: Moving War files
+    shell: mv `ls *.war | head -1` $TOMCAT_MANAGER/webapps/service_manager.war
+
+  - name: Toggle Tomcat
+    shell: |
+      sh files/start_tomcat.sh
+      wait_for_start {{ TOMCAT_MANAGER }}
+      wait_for_start {{ TOMCAT_BPEL }}
+      sh files/stop_tomcat.sh
+
+  - name: Create Indicies
+    shell: |
+      wget $MANAGER/create_indices.sql
+      cat create_indices.sql | sudo -u postgres psql $DATABASE
+
+  - name: Creating Stored Procedure
+    shell: |
+      wget $MANAGER/create_storedproc.sql
+      cat create_storedproc.sql | sudo -u postgres psql $DATABASE
+
+  - name: Changing owner of the stored procedure.
+    shell: |
+      echo "ALTER FUNCTION \"AccessStat.increment\"(character varying, character varying, character varying, character varying, character varying, timestamp without time zone, timestamp without time zone, integer, timestamp without time zone, integer, timestamp without time zone, integer, integer, integer, integer) OWNER TO $ROLENAME" > alter.sql
+      cat alter.sql | sudo -u postgres psql $DATABASE
+
+  - name: Securing the Tomcat installations
+    shell: sh files/secure_directories.sh
+
+  - name: Start Tomcat
+    shell: sh files/start_tomcat.sh
