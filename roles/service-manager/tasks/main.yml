@@ -1,2 +1,2 @@
-- include: install_manager.yml
-- include: install_tomcat.yml
+- include: install-manager.yml
+#- include: install-tomcat.yml

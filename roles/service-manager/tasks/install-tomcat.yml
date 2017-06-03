@@ -1,4 +1,4 @@
---
+---
   - name: Add Tomcat User Group
     shell: groupadd tomcat
 
@@ -15,8 +15,7 @@
 
   - name: Get Tomcat script
     get_url:
-      url: {{ manager }}/tomcat.sh
+      url: http://downloads.lappsgrid.org/service-manager/tomcat.sh
       dest: /etc/init.d/tomcat
 
-  - name: Set script permissions
-  
+  - name: Set script permissions  

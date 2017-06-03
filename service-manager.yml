@@ -1,5 +1,5 @@
 - hosts: localhost
   connection: local
   roles:
-    - java-postgres
+#    - java-postgres
     - service-manager

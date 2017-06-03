@@ -1,6 +1,6 @@
---
-  - name: Update apt-get indicies
-    shell: apt-get update && apt-get upgrade -y
+---
+#  - name: Update apt-get indicies
+ #   shell: sudo apt-get update && apt-get upgrade -y
 
   - name: Install common packages
     shell: curl -sSL {{ SCRIPTS }}/install-common.sh | bash
@@ -20,7 +20,7 @@
     shell: chmod +x {{ SMG }}/smg
 
   - name: Generating XML files....
-    shell: {{ SMG }}/smg ServiceManager.config
+    shell: smg-1.1.0-SNAPSHOT/smg ServiceManager.config
 
   - name: Source db.config
     shell: source db.config
@@ -35,22 +35,22 @@
     shell: sudo -u postgres createdb $DATABASE -O $ROLENAME  -E 'UTF8'
 
   - name: Start Tomcat installation...
-    shell: curl -sSL {{ MANAGER }}/install-tomcat.sh | bash
+    shell: curl -sSL "{{ MANAGER }}"/install-tomcat.sh | bash
 
   - name: Moving XML Files....
-    shell: cp tomcat-users.xml {{ TOMCAT_MANAGER }}/conf
+    shell: cp tomcat-users.xml "{{ TOMCAT_MANAGER }}"/conf
 
   - name: Moving XML Files....
-    shell: cp service_manager.xml {{ TOMCAT_MANAGER }}/conf/Catalina/localhost
+    shell: cp service_manager.xml "{{ TOMCAT_MANAGER }}"/conf/Catalina/localhost
 
   - name: Moving XML Files....
-    shell: cp tomcat-users-bpel.xml {{ TOMCAT_BPEL }}/conf/tomcat-users.xml
+    shell: cp tomcat-users-bpel.xml "{{ TOMCAT_BPEL }}"/conf/tomcat-users.xml
 
   - name: Moving XML Files....
-    shell: cp active-bpel.xml {{ TOMCAT_BPEL }}/conf/Catalina/localhost
+    shell: cp active-bpel.xml "{{ TOMCAT_BPEL }}"/conf/Catalina/localhost
 
   - name: Moving XML Files....
-    shell: cp langrid.ae.properties {{ TOMCAT_BPEL }}/bpr
+    shell: cp langrid.ae.properties "{{ TOMCAT_BPEL }}"/bpr
 
   - name: Downloading Service Manager WAR file
     shell: wget https://github.com/openlangrid/langrid/releases/download/servicegrid-core-20161206/jp.go.nict.langrid.webapps.servicegrid-core.jxta-p2p.nict-nlp-20161206.war
@@ -61,8 +61,8 @@
   - name: Toggle Tomcat
     shell: |
       sh files/start_tomcat.sh
-      wait_for_start {{ TOMCAT_MANAGER }}
-      wait_for_start {{ TOMCAT_BPEL }}
+      wait_for_start "{{ TOMCAT_MANAGER }}"
+      wait_for_start "{{ TOMCAT_BPEL }}"
       sh files/stop_tomcat.sh
 
   - name: Create Indicies

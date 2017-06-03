@@ -4,7 +4,7 @@
     apt: pkg={{ item }} state=installed
     with_items:
       - python-pycurl
-      - ant
+      #- ant
       - maven
 
   - name: Install Oracle Java Repo Installer Repository
